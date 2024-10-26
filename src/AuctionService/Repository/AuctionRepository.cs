@@ -3,6 +3,8 @@ using AuctionService.DTOs;
 using AuctionService.Models;
 using AuctionService.Repository;
 using AutoMapper;
+using Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +14,12 @@ namespace AuctionService.Repository;
 public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
 {
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndPoint;
 
-    public AuctionRepository(AuctionDbContext context , IMapper mapper) : base(context)
+    public AuctionRepository(AuctionDbContext context , IMapper mapper , IPublishEndpoint publishEndpoint) : base(context)
     {
         _mapper = mapper;
+        _publishEndPoint = publishEndpoint;
     }
 
 
@@ -31,8 +35,10 @@ public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
         // ToDo Add the Seller Name on creating the auction
         await _context.Auctions.AddAsync(auctionEntity);
         var result = await _context.SaveChangesAsync();
+        var newAuction = _mapper.Map<AuctionDto>(auctionEntity);
+        await _publishEndPoint.Publish(_mapper.Map<AuctionCreated>(newAuction)); //sending The object To The Contracts Model
         if(result <= 0) return null;
-        return _mapper.Map<AuctionDto>(auctionEntity);
+        return newAuction;
     }
 
     public async Task<Auction> Updateauction(Guid id, UpdateAuctionDto updated)
