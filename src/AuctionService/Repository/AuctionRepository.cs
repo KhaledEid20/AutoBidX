@@ -34,9 +34,12 @@ public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
         var auctionEntity = _mapper.Map<Auction>(auction);
         // ToDo Add the Seller Name on creating the auction
         await _context.Auctions.AddAsync(auctionEntity);
-        var result = await _context.SaveChangesAsync();
+
         var newAuction = _mapper.Map<AuctionDto>(auctionEntity);
         await _publishEndPoint.Publish(_mapper.Map<AuctionCreated>(newAuction)); //sending The object To The Contracts Model
+
+        var result = await _context.SaveChangesAsync();
+        
         if(result <= 0) return null;
         return newAuction;
     }
@@ -50,6 +53,11 @@ public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
             auction.Item.Color = updated.Color ?? auction.Item.Color;
             auction.Item.Mileage = updated.Mileage ?? auction.Item.Mileage;
             auction.Item.Year = updated.Year ?? auction.Item.Year;
+
+            var newAuction = _mapper.Map<AuctionUpdated>(auction);
+
+            await _publishEndPoint.Publish(newAuction);
+
             var result = await _context.SaveChangesAsync() > 0;
                 if(result){
                     return auction;
@@ -63,6 +71,13 @@ public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
     {
         var auction = await _context.Auctions.FindAsync(id);
         // ToDo check the seller Name on deleting the auction
+        
+        // Publishing Process
+        AuctionDeleted x = new AuctionDeleted{
+            Id = id
+        };
+        await _publishEndPoint.Publish(x);
+        // end
         if(auction != null){
             _context.Auctions.Remove(auction);
             var result = await _context.SaveChangesAsync() > 0;
