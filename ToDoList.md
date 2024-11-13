@@ -1,11 +1,11 @@
 # AuctionService ToDo List
 
 ## Auction Management
-1. [ ] Add the Seller Name when creating an auction
+1. [x] Add the Seller Name when creating an auction
    - File: `src/AuctionService/Repository/AuctionRepository.cs`
    - Method: `AddAuction`
 
-2. [ ] Check the Seller Name when deleting an auction
+2. [x] Check the Seller Name when deleting an auction
    - File: `src/AuctionService/Repository/AuctionRepository.cs`
    - Method: `DeleteAuction`
 

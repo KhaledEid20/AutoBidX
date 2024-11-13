@@ -2,6 +2,7 @@ using AuctionService.Data;
 using AuctionService.DTOs;
 using AuctionService.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -34,23 +35,28 @@ public class AuctionsController : ControllerBase
         return Ok(_mapper.Map<AuctionDto>(auction));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
     {
         var auction = await _unitOfWork._AuctionRepository.AddAuction(auctionDto);
+        auction.Seller = User.Identity.Name;
         if(auction == null) return BadRequest("there are missing Elements");
         return CreatedAtAction(nameof(GetAuctionById) , new{id = auction.Id} , auction);
     }
-    
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id , UpdateAuctionDto updateAuction){
         var auction = await _unitOfWork._AuctionRepository.Updateauction(id , updateAuction);
+        if(auction.Seller != User.Identity.Name) Forbid();
         if(auction == null) return BadRequest("The Auction does not exist");
         return Ok();
     }
-
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id){
+        var Auction = await _context.Auctions.FindAsync(id);
+        if(Auction.Seller != User.Identity.Name) Forbid();
         var auction = await _unitOfWork._AuctionRepository.DeleteAuction(id);
         if(auction == null){
             return NotFound();

@@ -33,6 +33,7 @@ public class AuctionRepository : BaseRepository<Auction>, IAuctionRepository
     {
         var auctionEntity = _mapper.Map<Auction>(auction);
         // ToDo Add the Seller Name on creating the auction
+
         await _context.Auctions.AddAsync(auctionEntity);
 
         var newAuction = _mapper.Map<AuctionDto>(auctionEntity);
