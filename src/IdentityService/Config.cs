@@ -28,6 +28,18 @@ public static class Config
                 RedirectUris = {"https://www.getpostman.com"},
                 ClientSecrets = new[]{new Secret("NotASecret".Sha256())},
                 AllowedGrantTypes = {GrantType.ResourceOwnerPassword}
+            },          
+            new Client
+            {
+                ClientId = "front",
+                ClientName = "front",
+                AllowedScopes = {"openid" , "profile" ,"auctionApp"},
+                RedirectUris = {"http://localhost:3000/api/auth/callback/id-server"},
+                ClientSecrets = {new Secret("secret".Sha256())},
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                AllowOfflineAccess = true,
+                RequirePkce = false,
+                AccessTokenLifetime = 3600*24*30
             }            
         };
 }

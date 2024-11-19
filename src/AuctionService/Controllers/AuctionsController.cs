@@ -47,8 +47,9 @@ public class AuctionsController : ControllerBase
     [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id , UpdateAuctionDto updateAuction){
+        var Auction = await _context.Auctions.FindAsync(id);
+        if(Auction.Seller != User.Identity.Name) Forbid();
         var auction = await _unitOfWork._AuctionRepository.Updateauction(id , updateAuction);
-        if(auction.Seller != User.Identity.Name) Forbid();
         if(auction == null) return BadRequest("The Auction does not exist");
         return Ok();
     }
