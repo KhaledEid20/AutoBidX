@@ -9,6 +9,9 @@
    - File: `src/AuctionService/Repository/AuctionRepository.cs`
    - Method: `DeleteAuction`
 
+3. [x] Dockerize the app again there is problem on communication inside docker
+
+
 ## Legend
 - [ ] Todo
 - [x] Completed

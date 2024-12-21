@@ -21,6 +21,10 @@ builder.Services.AddMassTransit(x =>
     
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search" , false)); // it's give a name to the Exchange in Kebab Format (a-b-c)
     x.UsingRabbitMq((context , cfg) => {
+        cfg.Host(builder.Configuration["RabbitMQ:Host"] , "/" , host=>{ // This is the configuration of the rabbitmq we used it because of docker without docker it's run as default
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username" , "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password" , "guest"));
+        });
         cfg.ReceiveEndpoint("search-auction-created" , e =>{
             
             e.UseMessageRetry(r=>r.Interval(5,5));

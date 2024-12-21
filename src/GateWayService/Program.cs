@@ -14,7 +14,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         o.TokenValidationParameters.NameClaimType = "username";
     });
 
-
 var app = builder.Build();
 
 app.UseAuthentication();

@@ -32,6 +32,10 @@ builder.Services.AddMassTransit(x =>
         o.UseBusOutbox();
     });
     x.UsingRabbitMq((context , cfg) => {
+        cfg.Host(builder.Configuration["RabbitMq:Host"] , "/" , host=>{ // This is the configuration of the rabbitmq we used it because of docker without docker it's run as default
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username" , "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password" , "guest"));
+        });
         cfg.ConfigureEndpoints(context);
     });
 } 
