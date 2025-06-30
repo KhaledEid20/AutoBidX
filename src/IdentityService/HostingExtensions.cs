@@ -28,6 +28,7 @@ internal static class HostingExtensions
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+                options.EmitStaticAudienceClaim = true;
 
                 if(builder.Environment.IsEnvironment("Docker"))
                 {
@@ -41,7 +42,8 @@ internal static class HostingExtensions
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<CustomProfileService>(); // Adding an Attribute To the Token
+            .AddProfileService<CustomProfileService>() // Adding an Attribute To the Token
+            .AddServerSideSessions();
         
         builder.Services.ConfigureApplicationCookie(options => {
             options.Cookie.SameSite = SameSiteMode.Lax;
