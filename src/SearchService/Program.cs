@@ -35,9 +35,21 @@ builder.Services.AddMassTransit(x =>
 } 
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseCors("AllowLocalhost3000");
 
 app.UseAuthorization();
 
